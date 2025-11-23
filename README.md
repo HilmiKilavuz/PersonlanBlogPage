@@ -250,34 +250,4 @@ Katkılarınızı bekliyoruz! Lütfen şu adımları izleyin:
 4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
 5. Pull Request oluşturun
 
----
 
-## 📄 Lisans
-
-Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
-
----
-
-## 👤 Yazar
-
-**Adınız**
-
-- GitHub: [@kullanici-adi](https://github.com/kullanici-adi)
-- LinkedIn: [Profiliniz](https://linkedin.com/in/profiliniz)
-- Email: email@example.com
-
----
-
-## 🙏 Teşekkürler
-
-Bu projeyi geliştirirken kullandığımız tüm açık kaynak kütüphanelere ve topluluğa teşekkür ederiz.
-
----
-
-<div align="center">
-
-⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
-
-Made with ❤️ using Next.js and TypeScript
-
-</div>
