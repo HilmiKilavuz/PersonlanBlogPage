@@ -42,7 +42,7 @@ export function Navbar() {
         {/* LOGO ALANI */}
         <Link href="/" className="group flex items-center gap-2">
           <div className="w-8 h-8 bg-gray-900 text-white rounded-lg flex items-center justify-center font-bold text-sm group-hover:rotate-12 transition-transform">
-            MH
+            HK
           </div>
           <span className="font-bold text-gray-800 tracking-tight hidden sm:block">
             Hilmi<span className="text-indigo-600">.dev</span>

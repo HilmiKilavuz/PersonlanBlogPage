@@ -44,3 +44,24 @@ export async function createPost(formData: FormData) {
   // İşlem bitince kullanıcıyı ana sayfaya at
   redirect("/");
 }
+
+// ... mevcut kodların altına ekle ...
+
+export async function deletePost(formData: FormData) {
+  const id = formData.get("id") as string;
+
+  if (!id) return;
+
+  try {
+    await db.post.delete({
+      where: { id },
+    });
+    
+    // Silme işleminden sonra sayfayı yenile
+    revalidatePath("/");
+    revalidatePath("/admin");
+  } catch (error) {
+    console.error("Silme hatası:", error);
+    throw new Error("Yazı silinirken hata oluştu.");
+  }
+}

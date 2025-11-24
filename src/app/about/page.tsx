@@ -216,29 +216,52 @@ export default async function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Eğitim Timeline */}
-            <section className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-white shadow-lg">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                   <span className="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg text-sm">🎓</span>
-                   Eğitim Yolculuğu
+            {/* Eğitim Yolculuğu (GÜNCELLENMİŞ VERSİYON) */}
+            <section className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-white shadow-lg relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+                
+                {/* Arka Plan Dekorasyonu (Hafif Desen) */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-50 to-transparent rounded-bl-full opacity-50"></div>
+
+                <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3 relative z-10">
+                   <span className="flex items-center justify-center w-10 h-10 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200">
+                     🎓
+                   </span>
+                   Akademik Yolculuk
                 </h2>
                 
-                <div className="relative border-l-2 border-indigo-100 ml-3 space-y-8 pl-8 py-2">
-                    <div className="relative">
-                        <div className="absolute -left-[39px] top-0 w-5 h-5 bg-indigo-600 rounded-full border-4 border-white shadow-md"></div>
-                        <h4 className="font-bold text-gray-900">Fırat Üniversitesi</h4>
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="px-2 py-0.5 rounded text-xs font-bold bg-indigo-100 text-indigo-700">GANO: 3.48</span>
-                            <span className="text-gray-500 text-xs">2023 - Günümüz</span>
+                <div className="space-y-8 relative z-10">
+                    
+                    {/* Üniversite Kartı (Vurgulu) */}
+                    <div className="relative pl-8 border-l-2 border-indigo-200">
+                        <div className="absolute -left-[9px] top-0 w-4 h-4 bg-indigo-600 rounded-full ring-4 ring-indigo-50"></div>
+                        
+                        <div className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 hover:bg-indigo-50 transition-colors">
+                            <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-bold text-gray-900 text-lg">Fırat Üniversitesi</h4>
+                                <span className="px-3 py-1 bg-white text-indigo-700 text-xs font-bold rounded-full shadow-sm border border-indigo-100">
+                                  3. Sınıf
+                                </span>
+                            </div>
+                            
+                            <p className="text-indigo-900 font-medium mb-3">Yazılım Mühendisliği</p>
+                            
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-bold">
+                                    <span>🚀 GANO:</span>
+                                    <span>3.48</span>
+                                </div>
+                                <span className="text-gray-400 text-xs font-medium">2023 - Günümüz</span>
+                            </div>
+                            
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                               Eğitim hayatım boyunca teknolojiye, özellikle de mobil uygulama geliştirmeye ilgi duydum. Üniversitede aldığım dersler sayesinde C#, SQL, veri yapıları, algoritmalar gibi konularda hem teorik hem de pratik deneyim kazandım.
+
+Eğitim hayatım boyunca sürekli öğrenmeyi, yeni teknolojiler denemeyi ve pratik projelerle kendimi geliştirmeyi hedefledim.
+                                
+                            </p>
                         </div>
-                        <p className="text-gray-600 text-sm">Yazılım Mühendisliği bölümünde; Nesne Yönelimli Programlama, Veri Yapıları ve Algoritma Analizi derslerinde yüksek başarı.</p>
-                    </div>
-                    <div className="relative">
-                        <div className="absolute -left-[39px] top-0 w-5 h-5 bg-gray-300 rounded-full border-4 border-white shadow-md"></div>
-                        <h4 className="font-bold text-gray-900">Lise Eğitimi</h4>
-                        <p className="text-gray-500 text-sm font-semibold mb-2">Sayısal Bölüm</p>
-                        <p className="text-gray-500 text-sm">Mühendislik temellerinin atıldığı dönem.</p>
-                    </div>
-                </div>
+                    </div>                   
+               </div>
             </section>
 
             {/* Sertifikalar & Dil */}

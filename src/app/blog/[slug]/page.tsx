@@ -1,101 +1,95 @@
-// src/app/page.tsx
+// src/app/blog/[slug]/page.tsx
+import { getPostBySlug } from "@/services/postService";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPosts } from "@/services/postService";
-import Hero from "@/components/sections/Hero";
-import { stripMarkdown } from "@/utils/stripMarkdown";
+import Image from "next/image"; // Image bileşenini ekledik
+import ReactMarkdown from "react-markdown";
 
-export default async function Home() {
-  const posts = await getPosts();
+interface BlogPostPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-slate-50 selection:bg-indigo-500 selection:text-white">
-      
-      {/* 🌟 ARKA PLAN EFEKTLERİ */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
-      {/* 1. BÖLÜM: Hero */}
-      <Hero />
-
-      {/* 2. BÖLÜM: Blog Listesi */}
-      <section id="blog" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <article className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         
-        <div className="flex items-end justify-between mb-12">
-           <div>
-              <h2 className="text-3xl font-black text-gray-900 sm:text-4xl tracking-tight">Son Yazılarım</h2>
-              <div className="h-1.5 w-24 bg-indigo-500 rounded-full mt-2"></div>
-           </div>
-           {/* Opsiyonel: Tümünü gör butonu eklenebilir */}
-           <div className="hidden sm:block text-gray-500 text-sm font-medium">
-              Toplam {posts.length} yazı
-           </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
-          {posts.map((post) => {
-            const cleanExcerpt = stripMarkdown(post.content).substring(0, 120) + "...";
-
-            return (
-              <article 
-                key={post.id} 
-                className="group flex flex-col bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-white/50 overflow-hidden"
-              >
-                <div className="flex-1 p-8 flex flex-col justify-between">
-                  <div className="flex-1">
-                    {/* Kategori ve Tarih */}
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-wide border border-indigo-100">
-                        Blog
-                      </span>
-                      <time className="text-xs text-gray-400 font-medium">
-                        {new Date(post.createdAt).toLocaleDateString('tr-TR', {
-                          year: 'numeric', month: 'long', day: 'numeric'
-                        })}
-                      </time>
-                    </div>
-                    
-                    <Link href={`/blog/${post.slug}`} className="block">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                        {post.title}
-                      </h3>
-                    </Link>
-                    
-                    <p className="text-base text-gray-600 leading-relaxed line-clamp-3">
-                      {post.excerpt || cleanExcerpt}
-                    </p>
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
-                     <Link 
-                        href={`/blog/${post.slug}`} 
-                        className="group/btn inline-flex items-center gap-2 text-sm font-bold text-gray-900 hover:text-indigo-600 transition-colors"
-                     >
-                       Okumaya Başla
-                       <span className="bg-gray-100 text-gray-600 rounded-full p-1 group-hover/btn:bg-indigo-100 group-hover/btn:text-indigo-600 transition-all">
-                         <svg className="w-4 h-4 transform group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                       </span>
-                     </Link>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        {/* Boş Durum (Empty State) */}
-        {posts.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 bg-white/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-gray-300">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">
-              📝
-            </div>
-            <p className="text-gray-500 text-lg font-medium">Henüz hiç blog yazısı eklenmemiş.</p>
-            <p className="text-sm text-gray-400 mt-2">Admin panelinden ilk yazını yazabilirsin.</p>
+        {/* --- KAPAK FOTOĞRAFI ALANI (YENİ) --- */}
+        {post.coverImage && (
+          <div className="relative w-full h-64 sm:h-80 md:h-96">
+            <Image 
+              src={post.coverImage}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* Resmin üzerine hafif bir karartma atalım ki başlık daha iyi okunsun (Opsiyonel) */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
         )}
 
-      </section>
+        {/* Header (Resim varsa arka plan şeffaf olsun, yoksa lacivert kalsın) */}
+        <header className={`${post.coverImage ? '-mt-32 relative z-10' : 'bg-indigo-600'} px-6 py-12 text-center`}>
+          <h1 className={`text-3xl sm:text-4xl font-extrabold leading-tight ${post.coverImage ? 'text-white drop-shadow-lg' : 'text-white'}`}>
+            {post.title}
+          </h1>
+          <div className={`mt-4 text-sm ${post.coverImage ? 'text-gray-100' : 'text-indigo-100'}`}>
+            <time dateTime={post.createdAt.toISOString()}>
+              {new Date(post.createdAt).toLocaleDateString('tr-TR', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+              })}
+            </time>
+          </div>
+        </header>
+
+        {/* İÇERİK ALANI */}
+        <div className="px-6 py-10 sm:px-10">
+          <div className="text-gray-700 leading-relaxed">
+            <ReactMarkdown
+              components={{
+                h1: ({node, ...props}) => <h1 className="text-3xl font-bold text-indigo-700 mt-8 mb-4" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-gray-900 mt-6 mb-3 border-b pb-2" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2" {...props} />,
+                p: ({node, ...props}) => <p className="mb-4 text-lg leading-7" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc list-inside mb-4 space-y-2 ml-4" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-4 space-y-2 ml-4" {...props} />,
+                blockquote: ({node, ...props}) => (
+                  <blockquote className="border-l-4 border-indigo-500 pl-4 py-2 italic bg-gray-50 my-4 rounded-r-lg text-gray-600" {...props} />
+                ),
+                code: ({node, ...props}) => (
+                  <code className="bg-gray-800 text-green-400 px-2 py-1 rounded text-sm font-mono" {...props} />
+                ),
+                // Resimler (Markdown içindeki) responsive olsun
+                img: ({node, ...props}) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="rounded-xl shadow-md my-6 w-full h-auto" {...props} alt="" />
+                ),
+              }}
+            >
+              {post.content}
+            </ReactMarkdown>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="bg-gray-50 px-6 py-6 border-t border-gray-100">
+           <Link href="/" className="text-indigo-600 font-medium flex items-center gap-2 hover:underline">
+             ← Ana Sayfaya Dön
+           </Link>
+        </footer>
+
+      </article>
     </main>
   );
 }

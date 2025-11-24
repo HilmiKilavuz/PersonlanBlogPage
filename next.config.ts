@@ -4,11 +4,16 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'github.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "**", // JOKER KARAKTER: Her yere izin ver
       },
+      // next.config.ts içine ekle:
+{
+  protocol: 'https',
+  hostname: 'res.cloudinary.com',
+  port: '',
+  pathname: '/**',
+},
     ],
   },
 };
