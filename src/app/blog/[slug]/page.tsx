@@ -1,9 +1,11 @@
 // src/app/blog/[slug]/page.tsx
-import { getPostBySlug } from "@/services/postService";
+import { getPostBySlug, getPosts } from "@/services/postService"; // getPosts'u da ekledik
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image"; // Image bileşenini ekledik
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
+import { Metadata } from "next"; // Tip tanımlaması için
+import { stripMarkdown } from "@/utils/stripMarkdown"; // Meta açıklama için temizleme aracı
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -11,6 +13,65 @@ interface BlogPostPageProps {
   }>;
 }
 
+// ----------------------------------------------------------------------------
+// 1. SEO AYARLARI (Dinamik Metadata) 🔍
+// ----------------------------------------------------------------------------
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: "Yazı Bulunamadı",
+    };
+  }
+
+  // Açıklama için blog içeriğinin ilk 160 karakterini alıp temizleyelim
+  const description = post.excerpt || stripMarkdown(post.content).substring(0, 160);
+
+  return {
+    title: post.title,
+    description: description,
+    // Open Graph: Sosyal Medya (LinkedIn, Twitter) Paylaşım Ayarları
+    openGraph: {
+      title: post.title,
+      description: description,
+      type: "article",
+      url: `https://senin-siten.vercel.app/blog/${post.slug}`, // Burayı kendi site adresinle güncelle
+      images: post.coverImage ? [
+        {
+          url: post.coverImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: description,
+      images: post.coverImage ? [post.coverImage] : [],
+    },
+  };
+}
+
+// ----------------------------------------------------------------------------
+// 2. PERFORMANS AYARLARI (SSG - Static Site Generation) ⚡
+// ----------------------------------------------------------------------------
+// Bu fonksiyon, siten "Build" edilirken tüm blog yazılarını önceden bulur
+// ve hepsi için statik HTML dosyaları oluşturur.
+export async function generateStaticParams() {
+  const posts = await getPosts(); // Tüm yazıları çek
+
+  return posts.map((post) => ({
+    slug: post.slug, // Her yazı için bir sayfa yolu oluştur
+  }));
+}
+
+// ----------------------------------------------------------------------------
+// 3. SAYFA İÇERİĞİ (Aynı Kalıyor)
+// ----------------------------------------------------------------------------
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   
   const { slug } = await params;
@@ -24,7 +85,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <main className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <article className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         
-        {/* --- KAPAK FOTOĞRAFI ALANI (YENİ) --- */}
+        {/* Kapak Fotoğrafı */}
         {post.coverImage && (
           <div className="relative w-full h-64 sm:h-80 md:h-96">
             <Image 
@@ -34,12 +95,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               className="object-cover"
               priority
             />
-            {/* Resmin üzerine hafif bir karartma atalım ki başlık daha iyi okunsun (Opsiyonel) */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
         )}
 
-        {/* Header (Resim varsa arka plan şeffaf olsun, yoksa lacivert kalsın) */}
+        {/* Başlık Alanı */}
         <header className={`${post.coverImage ? '-mt-32 relative z-10' : 'bg-indigo-600'} px-6 py-12 text-center`}>
           <h1 className={`text-3xl sm:text-4xl font-extrabold leading-tight ${post.coverImage ? 'text-white drop-shadow-lg' : 'text-white'}`}>
             {post.title}
@@ -53,7 +113,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </header>
 
-        {/* İÇERİK ALANI */}
+        {/* İçerik */}
         <div className="px-6 py-10 sm:px-10">
           <div className="text-gray-700 leading-relaxed">
             <ReactMarkdown
@@ -70,7 +130,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 code: ({node, ...props}) => (
                   <code className="bg-gray-800 text-green-400 px-2 py-1 rounded text-sm font-mono" {...props} />
                 ),
-                // Resimler (Markdown içindeki) responsive olsun
                 img: ({node, ...props}) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img className="rounded-xl shadow-md my-6 w-full h-auto" {...props} alt="" />

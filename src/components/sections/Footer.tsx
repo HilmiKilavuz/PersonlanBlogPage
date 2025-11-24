@@ -9,7 +9,7 @@ export default function Footer() {
           
           {/* Telif Hakkı */}
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Senin Adın. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} M.Hilmi Kılavuz. Tüm hakları saklıdır.
           </p>
 
           {/* Sosyal Linkler */}

@@ -43,7 +43,7 @@ export default function Hero() {
                 href="#blog" 
                 className="px-8 py-4 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
-                Projelerimi İncele
+                Yazılarımı İncele
               </Link>
               <Link 
                 href="/about" 
@@ -58,7 +58,6 @@ export default function Hero() {
               <span>Şunlarla üretiyorum:</span>
               <div className="flex gap-4 text-2xl grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
                 <span title="Android/Kotlin">📱</span>
-                <span title="Next.js/React">⚛️</span>
                 <span title=".NET/C#">💻</span>
                 <span title="Cyber Security">🛡️</span>
                 <span title="Database">🗄️</span>
