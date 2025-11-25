@@ -46,5 +46,5 @@ export function middleware(req: NextRequest) {
 
 // Middleware'in sadece bu yollarda çalışmasını sağla (Performans için)
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: "/kaptan-kosk/:path*",
 };

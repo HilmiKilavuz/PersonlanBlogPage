@@ -1,96 +1,166 @@
 // src/components/sections/Hero.tsx
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useScroll, useTransform, useSpring, useMotionTemplate, useMotionValue } from "framer-motion";
+import { useRef, useEffect } from "react";
+
+// Kelime Animasyonu için Yardımcı Bileşen
+const Word = ({ children, delay = 0 }: { children: string; delay?: number }) => {
+  return (
+    <span className="inline-block overflow-hidden mr-2 pb-2 align-bottom">
+      <motion.span
+        initial={{ y: "100%" }}
+        animate={{ y: "0%" }}
+        transition={{ duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9], delay: delay }}
+        className="inline-block"
+      >
+        {children}
+      </motion.span>
+    </span>
+  );
+};
 
 export default function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
+  
+  // Scroll Paralaks Efektleri
+  const yBackground = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacityHero = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  // Mouse Takip Eden Spotlight Efekti
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  useEffect(() => {
+    const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
+      mouseX.set(clientX);
+      mouseY.set(clientY);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const spotlightBackground = useMotionTemplate`radial-gradient(600px circle at ${springX}px ${springY}px, rgba(99, 102, 241, 0.15), transparent 80%)`;
+
   return (
-    <section className="relative overflow-hidden py-20 sm:py-32">
+    <section ref={containerRef} className="relative min-h-screen flex flex-col justify-center px-6 sm:px-12 lg:px-24 bg-[#050505] overflow-hidden">
       
-      {/* Arka Plan Efektleri (Blob) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
+      {/* 1. ARKA PLAN KATMANLARI */}
+      <motion.div 
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{ background: spotlightBackground }}
+      />
+      <div className="absolute inset-0 z-0 bg-noise pointer-events-none opacity-40"></div>
+      
+      {/* Dekoratif Büyük Çemberler */}
+      <motion.div style={{ y: yBackground }} className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-indigo-900/30 rounded-full blur-[120px] z-0 pointer-events-none mix-blend-screen" />
+      
+      {/* 2. İÇERİK ALANI */}
+      <motion.div style={{ opacity: opacityHero }} className="relative z-10 w-full max-w-[1600px] mx-auto mt-12 lg:mt-20">
+        
+        {/* Üst Bilgi: Kimlik ve Durum */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="flex flex-wrap items-center gap-6 mb-8 text-gray-400 font-mono text-xs sm:text-sm tracking-widest uppercase"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>İş Tekliflerine Açık</span>
+          </div>
+          <span className="hidden sm:inline w-8 h-[1px] bg-indigo-500/50"></span>
+          <span>Yazılım Mühendisliği (3. Sınıf)</span>
+          <span className="hidden sm:inline w-8 h-[1px] bg-indigo-500/50"></span>
           
-          {/* SOL TARAFA: Metin Alanı */}
-          <div className="flex-1 text-center lg:text-left z-10">
-            
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-semibold mb-6 animate-fade-in-up">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              Yazılım Mühendisliği Öğrencisi
-            </div>
+        </motion.div>
 
-            <h1 className="text-4xl lg:text-6xl font-black text-gray-900 tracking-tight mb-6">
-              Merhaba, Ben <br className="hidden lg:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
-               Hilmi
-              </span>
-            </h1>
-            
-            <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
-              Android dünyasında <strong>Kotlin</strong> ile başladığım yolculuğuma, şimdi <strong>Siber Güvenlik</strong>  ile derinlik katıyorum.Meraklı ve araştırmayı çok seven bir Yazılım Mühendisi adayıyım. Karmaşık problemleri basit, güvenli ve ölçeklenebilir çözümlere dönüştürmeyi seviyorum.
+        {/* ANA BAŞLIK (Devasa Tipografi - Türkçe) */}
+        <h1 className="font-display text-5xl sm:text-7xl lg:text-[9rem] font-bold leading-[0.95] tracking-tighter text-white mix-blend-difference mb-8">
+          <div className="block">
+            <Word delay={0.1}>Geleceği</Word>
+            <span className="text-gray-600 mx-4 font-light italic text-4xl sm:text-6xl lg:text-[5rem] align-middle">&</span>
+            <Word delay={0.2}>Güvenle İnşa Et.</Word>
+          </div>
+          
+        </h1>
+
+        {/* Alt Izgara (Grid Layout) */}
+        <div className="mt-12 lg:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* SOL: Profil Fotoğrafı ve Detaylar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="lg:col-span-4 relative group"
+          >
+             <div className="relative w-48 h-48 sm:w-64 sm:h-64 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-gray-900">
+                <Image 
+                  src="https://github.com/HilmiKilavuz.png"
+                  alt="Muhammed Hilmi Kılavuz"
+                  fill
+                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-110 group-hover:scale-100"
+                />
+                {/* Üzerine Noise Doku */}
+                <div className="absolute inset-0 bg-noise opacity-20 mix-blend-overlay"></div>
+             </div>
+             
+             {/* Dekoratif Dönen Çember */}
+             <div className="absolute -top-4 -right-4 w-24 h-24 border border-indigo-500/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
+          </motion.div>
+
+          {/* SAĞ: Açıklama Metni ve Butonlar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="lg:col-span-8 flex flex-col justify-between h-full"
+          >
+            <p className="text-lg sm:text-2xl text-gray-400 font-light leading-relaxed max-w-3xl">
+              Merhaba, ben <span className="text-white font-medium">Hilmi Kılavuz</span>. Yazılım Mühendisliği öğrencisiyim.
+              Kariyerime <span className="text-indigo-400 border-b border-indigo-500/30 pb-1">Mobil Geliştirme</span> ile başladım, şimdi ise rotamı <span className="text-purple-400 border-b border-purple-500/30 pb-1">Siber Güvenlik</span> alanına çevirdim.Ve bu alanlarda kendimi geliştirmeye çalışıyorum. 
+             
             </p>
-            
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+
+            <div className="mt-10 flex flex-wrap gap-6">
               <Link 
                 href="#blog" 
-                className="px-8 py-4 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                className="group relative px-8 py-4 bg-white text-black rounded-full overflow-hidden flex items-center gap-3 transition-transform hover:scale-105"
               >
-                Yazılarımı İncele
+                <span className="relative z-10 font-bold text-lg tracking-tight">Blog Yazılarımı Gör</span>
+                <svg className="relative z-10 w-5 h-5 transform group-hover:rotate-45 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
               </Link>
+
               <Link 
                 href="/about" 
-                className="px-8 py-4 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 transition-all shadow-sm hover:shadow-md"
+                className="px-8 py-4 text-white border border-white/10 bg-white/5 rounded-full hover:bg-white/10 hover:border-white/20 transition-colors font-medium text-lg flex items-center gap-2 backdrop-blur-sm"
               >
-                Hakkımda Daha Fazlası
+                Hakkımda
               </Link>
             </div>
-
-            {/* Tech Stack İkonları (Mini) */}
-            <div className="mt-10 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center gap-4 text-sm text-gray-500">
-              <span>Şunlarla üretiyorum:</span>
-              <div className="flex gap-4 text-2xl grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
-                <span title="Android/Kotlin">📱</span>
-                <span title=".NET/C#">💻</span>
-                <span title="Cyber Security">🛡️</span>
-                <span title="Database">🗄️</span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* SAĞ TARAFA: Profil Fotoğrafı */}
-          <div className="flex-1 relative w-full max-w-md lg:max-w-none flex justify-center lg:justify-end">
-             <div className="relative w-72 h-72 lg:w-[450px] lg:h-[450px]">
-                {/* Arkadaki Renkli Hale */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-[2rem] rotate-6 opacity-20 blur-2xl"></div>
-                
-                {/* Resim Çerçevesi */}
-                <div className="relative w-full h-full rounded-[2rem] overflow-hidden border-8 border-white shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <Image 
-  src="https://github.com/HilmiKilavuz.png"
-  alt=" Hilmi Kılavuz"
-  fill
-  className="object-cover"
-  priority
-/>
-                </div>
-
-              
-                
-
-             </div>
-          </div>
+          </motion.div>
 
         </div>
-      </div>
+
+      </motion.div>
+
+      {/* 3. SCROLL GÖSTERGESİ */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2, duration: 1 }}
+        className="absolute bottom-8 right-8 flex items-center gap-4"
+      >
+        <span className="text-xs text-gray-500 font-mono tracking-widest uppercase">Kaydır</span>
+        <div className="w-12 h-[1px] bg-gradient-to-r from-gray-500 to-transparent"></div>
+      </motion.div>
+
     </section>
   );
 }

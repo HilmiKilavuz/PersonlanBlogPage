@@ -1,16 +1,22 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-
-// DEĞİŞİKLİK BURADA: Header yerine Navbar çağırıyoruz ve { } kullanıyoruz.
 import { Navbar } from "@/components/sections/Navbar";
-import Footer from "@/components/sections/Footer"; // Footer'a dokunmadık, o eski usul kalsın şimdilik.
+import Footer from "@/components/sections/Footer";
+import { ReactLenis } from "@/utils/lenis"; // Az önce oluşturduğumuz dosya
 
-const inter = Inter({ subsets: ["latin"] });
+// 1. Modern Fontları Yüklüyoruz
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const spaceGrotesk = Space_Grotesk({ 
+  subsets: ["latin"], 
+  variable: "--font-space",
+  weight: ["300", "400", "500", "600", "700"] 
+});
 
 export const metadata: Metadata = {
-  title: "Yazılım Mühendisliği Portfolyosu",
-  description: "Modern web teknolojileri üzerine blog.",
+  title: "Muhammed Hilmi Kılavuz | Creative Software Engineer",
+  description: "Building secure, scalable, and beautiful digital experiences.",
 };
 
 export default function RootLayout({
@@ -19,16 +25,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="scroll-smooth">
-      <body className={inter.className}>
+    <html lang="tr" className="scroll-smooth" suppressHydrationWarning={true}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#050505] text-white antialiased selection:bg-indigo-500 selection:text-white`}>
         
-        {/* Header yerine Navbar bileşenini kullanıyoruz */}
-        <Navbar />
-        
-        {children}
-        
-        <Footer />
-        
+        {/* 2. Smooth Scroll Sarmalayıcısı */}
+        <ReactLenis root options={{ lerp: 0.1, duration: 1.8 ,smoothWheel: true}}>
+          
+          {/* 3. Global Noise Efekti (Sinematik Kumlu Görünüm) */}
+          <div className="fixed inset-0 z-[9999] pointer-events-none opacity-[0.04] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+          
+          <Navbar />
+          
+          {children}
+          
+          <Footer />
+          
+        </ReactLenis>
       </body>
     </html>
   );
