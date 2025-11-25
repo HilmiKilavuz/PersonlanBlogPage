@@ -42,7 +42,7 @@ export function Navbar() {
         {/* LOGO */}
         <Link href="/" className="group flex items-center gap-2">
           <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm group-hover:rotate-12 transition-transform">
-            MH
+          HK
           </div>
           <span className="font-display font-bold text-white tracking-tight hidden sm:block">
             Hilmi<span className="text-indigo-400">.dev</span>
