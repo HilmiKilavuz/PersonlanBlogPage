@@ -21,7 +21,7 @@ export default async function AdminDashboard() {
           </div>
           
           <Link 
-            href="/admin/create" 
+            href="/kaptan-kosk/create" 
             className="group px-6 py-3 bg-gray-900 text-white font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-all hover:-translate-y-1 flex items-center gap-2"
           >
             <span>+</span> Yeni Yazı
@@ -56,6 +56,13 @@ export default async function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
+                      {/* DÜZENLE BUTONU (YENİ) */}
+  <Link
+    href={`/kaptan-kosk/edit/${post.id}`}
+    className="text-indigo-600 hover:text-indigo-900 font-medium text-sm border border-indigo-100 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-1"
+  >
+    <span>✏️</span> Düzenle
+  </Link>
                       <form action={deletePost}>
                         <input type="hidden" name="id" value={post.id} />
                         <button 

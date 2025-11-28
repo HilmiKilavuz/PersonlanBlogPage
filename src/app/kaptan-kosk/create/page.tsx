@@ -77,7 +77,7 @@ const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
             <h1 className="text-3xl font-black text-gray-900 tracking-tight">Yeni İçerik Oluştur</h1>
             <p className="text-indigo-600 font-medium">Bilgisayarından resim yükle 📸</p>
           </div>
-          <Link href="/admin" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:bg-white transition-all">
+          <Link href="/kaptan-kosk" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:bg-white transition-all">
             ← Vazgeç
           </Link>
         </div>

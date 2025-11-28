@@ -1,26 +1,21 @@
-// src/actions/postActions.ts
-"use server"; // BU SATIR ÇOK ÖNEMLİ: Bu kodun sadece sunucuda çalışacağını belirtir.
+"use server";
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-// Formdan gelen verileri işleyecek fonksiyon
+// --- 1. YENİ YAZI EKLEME ---
 export async function createPost(formData: FormData) {
-  
-  // 1. Formdan verileri al
   const title = formData.get("title") as string;
   const slug = formData.get("slug") as string;
   const excerpt = formData.get("excerpt") as string;
   const content = formData.get("content") as string;
   const coverImage = formData.get("coverImage") as string;
 
-  // 2. Basit Doğrulama (Validation)
   if (!title || !slug || !content) {
     throw new Error("Başlık, URL ve İçerik alanları zorunludur.");
   }
 
-  // 3. Veritabanına Kayıt (Prisma)
   try {
     await db.post.create({
       data: {
@@ -29,7 +24,7 @@ export async function createPost(formData: FormData) {
         excerpt,
         content,
         coverImage,
-        published: true, // Direkt yayınla (İstersen false yapıp taslak bırakabilirsin)
+        published: true, 
       },
     });
   } catch (error) {
@@ -37,20 +32,19 @@ export async function createPost(formData: FormData) {
     throw new Error("Veritabanına kayıt sırasında bir hata oluştu.");
   }
 
-  // 4. Önbelleği Temizle ve Yönlendir
-  // Yeni yazı eklendiği için ana sayfayı ve blog listesini yenilememiz lazım.
+  // Önbelleği temizle ve yönlendir
   revalidatePath("/");
-  
-  // İşlem bitince kullanıcıyı ana sayfaya at
-  redirect("/");
+  revalidatePath("/kaptan-kosk");
+  redirect("/kaptan-kosk");
 }
 
-// ... mevcut kodların altına ekle ...
-
+// --- 2. YAZI SİLME ---
 export async function deletePost(formData: FormData) {
   const id = formData.get("id") as string;
 
-  if (!id) return;
+  if (!id) {
+    throw new Error("Silinecek yazı ID'si bulunamadı.");
+  }
 
   try {
     await db.post.delete({
@@ -59,9 +53,41 @@ export async function deletePost(formData: FormData) {
     
     // Silme işleminden sonra sayfayı yenile
     revalidatePath("/");
-    revalidatePath("/admin");
+    revalidatePath("/kaptan-kosk");
   } catch (error) {
     console.error("Silme hatası:", error);
     throw new Error("Yazı silinirken hata oluştu.");
   }
+}
+
+// --- 3. YAZI GÜNCELLEME ---
+export async function updatePost(formData: FormData) {
+  const id = formData.get("id") as string;
+  const title = formData.get("title") as string;
+  const slug = formData.get("slug") as string;
+  const excerpt = formData.get("excerpt") as string;
+  const content = formData.get("content") as string;
+  const coverImage = formData.get("coverImage") as string;
+
+  if (!id || !title || !slug || !content) {
+    throw new Error("Eksik veri gönderildi.");
+  }
+
+  try {
+    await db.post.update({
+      where: { id },
+      data: { title, slug, excerpt, content, coverImage },
+    });
+  } catch (error) {
+    console.error("Güncelleme hatası:", error);
+    throw new Error("Yazı güncellenemedi.");
+  }
+
+  // İlgili sayfaları yenile
+  revalidatePath("/");
+  revalidatePath("/kaptan-kosk");
+  revalidatePath(`/blog/${slug}`);
+  
+  // İşlem bitince panele dön
+  redirect("/kaptan-kosk");
 }
