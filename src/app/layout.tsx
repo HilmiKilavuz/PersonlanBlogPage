@@ -17,6 +17,9 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Muhammed Hilmi Kılavuz | Creative Software Engineer",
   description: "Building secure, scalable, and beautiful digital experiences.",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
