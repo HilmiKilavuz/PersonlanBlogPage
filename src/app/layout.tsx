@@ -5,6 +5,7 @@ import "./globals.css";
 import { Navbar } from "@/components/sections/Navbar";
 import Footer from "@/components/sections/Footer";
 import { ReactLenis } from "@/utils/lenis"; // Az önce oluşturduğumuz dosya
+import { Analytics } from "@vercel/analytics/next";
 
 // 1. Modern Fontları Yüklüyoruz
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -44,6 +45,8 @@ export default function RootLayout({
           <Footer />
           
         </ReactLenis>
+        
+        <Analytics />
       </body>
     </html>
   );
